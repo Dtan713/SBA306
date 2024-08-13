@@ -1,98 +1,80 @@
 package sba.sms.models;
 
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Objects;
 import java.util.Set;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-/**
- * Course is a POJO, configured as a persistent class that represents (or maps
- * to) a table
- * name 'course' in the database. A Course object contains fields that represent
- * course
- * information and a mapping of 'courses' that indicate an inverse or
- * referencing side
- * of the relationship. Implement Lombok annotations to eliminate boilerplate
- * code.
- */
+@ToString
+@EqualsAndHashCode
 @Entity
-@Table(name = "course")
-public class Course {
+@Table(name = "student")
 
+public class Student {
+    @Column(name = "email", unique = true, length = 50, nullable = false)
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
+    private String email;
 
     @Column(name = "name", length = 50, nullable = false)
     private String name;
 
-    @Column(name = "instructor", length = 50, nullable = false)
-    private String instructor;
+    @Column(name = "password", length = 50, nullable = false)
+    private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REMOVE,
+    @ManyToMany(targetEntity = Course.class, fetch = FetchType.EAGER, cascade = { CascadeType.DETACH, CascadeType.MERGE,
+            CascadeType.REMOVE,
             CascadeType.PERSIST })
-    @JoinTable(name = "students_courses", joinColumns = @JoinColumn(name = "courses_id"), inverseJoinColumns = @JoinColumn(name = "student_email"))
-    private Set<Student> students = new HashSet<>();
+    @JoinTable(name = "students_courses", joinColumns = @JoinColumn(name = "student_email"), inverseJoinColumns = @JoinColumn(name = "courses_id"))
+    private Set<Course> courses = new HashSet<>();
 
-    // no args constructor
+    //No args constructor
+    public Student(){};
 
-    Course() {
-
-    }
-
-    // all args constructor
-
-    Course(String name, String instructor, Set<Student> students) {
+    //All args constructor
+    public Student(String name, String email, Set<Course> courses, String password) {
         this.name = name;
-        this.instructor = instructor;
-        this.students = students;
-
+        this.email = email;
+        this.courses = courses;
+        this.password = password;
     }
 
-    // required args constructor
-    public Course(String name, String instructor) {
+    //Required args constructor
+    public Student(String email, String name, String password) {
+        this.email = email;
         this.name = name;
-        this.instructor = instructor;
-
+        this.password = password;
     }
 
-    // GETTERS AND SETTER
-
-    public int getId() {
-        return this.id;
+    public Set<Course> getCourses() {
+        return courses;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public String getEmail() {
+        return email;
     }
 
     public String getName() {
-        return this.name;
+        return name;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setCourses(Set<Course> courses) {
+        this.courses = courses;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public String getInstructor() {
-        return this.instructor;
+    public void setPassword(String password) {
+        this.password = password;
     }
-
-    public void setInstructor(String instructor) {
-        this.instructor = instructor;
-    }
-
-    public Set<Student> getStudents() {
-        return this.students;
-    }
-
-    public void setStudents(Set<Student> students) {
-        this.students = students;
-    }
-
 }
